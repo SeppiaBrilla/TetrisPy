@@ -122,7 +122,7 @@ class tetramino:
 
     
     def rotate(self, field):
-        pass
+       self.numericImage = self.numericImage.transpose()
 
 
         
