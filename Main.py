@@ -110,7 +110,6 @@ class tetramino:
 
     
     def rotate(self, field):
-        self.erase(field)
         transposed = self.numericImage.transpose()
         if self.rotatation % 2 == 0:
             flipped = np.flip(transposed)
@@ -125,6 +124,7 @@ class tetramino:
                    if field[self.y + i, self.x + j] == 1:
                         return
 
+        self.erase(field)
         self.numericImage = flipped
 
 
