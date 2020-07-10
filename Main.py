@@ -18,6 +18,12 @@ class tetramino:
         self.y= 0
         self.x = 5
 
+    def draw(self, field):
+        for i in range(len(self.numericImage)):
+            for j in range(np.size(self.numericImage, 1)):
+                if self.numericImage[i, j] ==1:
+                    field[self.y + i, self.x + j] = self.numericImage[i , j]
+
     def erase(self, field):
         for i in range(len(self.numericImage)):
             for j in range(np.size(self.numericImage, 1)):
@@ -45,10 +51,7 @@ class tetramino:
 
         self.y +=1
 
-        for i in range(len(self.numericImage)):
-            for j in range(np.size(self.numericImage, 1)):
-                if self.numericImage[i, j] ==1:
-                    field[self.y + i, self.x + j] = self.numericImage[i , j]
+        self.draw(field)
 
     def goRight(self, field):
 
@@ -71,13 +74,7 @@ class tetramino:
 
         self.x +=1
 
-        for i in range(len(self.numericImage)):
-            for j in range(np.size(self.numericImage, 1)):
-                if self.numericImage[i, j] == 1:
-                    print(self.y + i , self.x + j) 
-                    field[self.y + i, self.x + j] = self.numericImage[i , j]
-
-        self.left = True
+        self.draw(field)
 
     def goLeft(self, field):
  
@@ -101,31 +98,25 @@ class tetramino:
 
         self.x -=1
 
-        for i in range(len(self.numericImage)):
-            for j in range(np.size(self.numericImage, 1)):
-                if self.numericImage[i, j] ==1:
-                    field[self.y + i, self.x + j] = self.numericImage[i , j]
-        
-        self.Right = True
+        self.draw(field)
 
     
     def rotate(self, field):
-        transposed = self.numericImage.transpose()
-        if self.rotatation % 2 == 0:
-            flipped = np.flip(transposed)
-        else:
-            flipped = transposed
+        flipped = np.rot90(self.numericImage,1)
 
-        self.rotatation += 1
-        
+        self.erase(field)
+
         for i in range(len(flipped)):
            for j in range(np.size(flipped, 1)):
                if flipped[i , j] == 1:
                    if field[self.y + i, self.x + j] == 1:
-                        return
 
-        self.erase(field)
+                        return 
+
+        self.rotatation += 1
         self.numericImage = flipped
+        print(flipped)
+        self.draw(field)
 
 
         
@@ -141,7 +132,7 @@ class Hero(tetramino):
         self.stopl = False
         self.x = numericX
         self.y = numericY
-        self.numericImage = np.matrix([[1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]])
+        self.numericImage = np.matrix([1, 1, 1, 1])
         self.rotatation = 0
 
 class OrangeRicky(tetramino):
@@ -152,7 +143,7 @@ class OrangeRicky(tetramino):
         self.stopl = False
         self.x = numericX
         self.y = numericY
-        self.numericImage = np.matrix([[0, 0, 0, 1], [0, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]])
+        self.numericImage = np.matrix([[0, 0, 0, 1], [0, 1, 1, 1]])
         self.rotatation = 0
 
 class BlueRicky(tetramino):
@@ -163,7 +154,7 @@ class BlueRicky(tetramino):
         self.stopl = False
         self.x = numericX
         self.y = numericY
-        self.numericImage = np.matrix([[1, 0, 0, 0], [1, 1, 1, 0], [0, 0, 0, 0], [0, 0, 0, 0]])
+        self.numericImage = np.matrix([[1, 0, 0, 0], [1, 1, 1, 0]])
         self.rotatation = 0
 
 class Teewee(tetramino):
@@ -174,7 +165,7 @@ class Teewee(tetramino):
         self.stopl = False
         self.x = numericX
         self.y = numericY
-        self.numericImage = np.matrix([[0, 0, 1, 0], [0, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]])
+        self.numericImage = np.matrix([[0, 0, 1, 0], [0, 1, 1, 1]])
         self.rotatation = 0
 
 class Cleverland(tetramino):
@@ -185,7 +176,7 @@ class Cleverland(tetramino):
         self.stopl = False
         self.x = numericX
         self.y = numericY
-        self.numericImage = np.matrix([[0, 1, 1, 0], [0, 0, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]])
+        self.numericImage = np.matrix([[0, 1, 1, 0], [0, 0, 1, 1]])
         self.rotatation = 0
 
 class RhodeIsland(tetramino):
@@ -196,7 +187,7 @@ class RhodeIsland(tetramino):
         self.stopl = False
         self.x = numericX
         self.y = numericY
-        self.numericImage = np.matrix([[0, 1, 1, 0], [1, 1, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]])
+        self.numericImage = np.matrix([[0, 1, 1, 0], [1, 1, 0, 0]])
         self.rotatation = 0
 
 class SmashBoy(tetramino):
@@ -207,7 +198,7 @@ class SmashBoy(tetramino):
         self.stopl = False
         self.x = numericX
         self.y = numericY
-        self.numericImage = np.matrix([[0, 1, 1, 0], [0, 1, 1, 0], [0, 0, 0, 0], [0, 0, 0, 0]])
+        self.numericImage = np.matrix([[0, 1, 1, 0], [0, 1, 1, 0]])
         self.rotatation = 0
 
 
@@ -217,6 +208,19 @@ def draw(field, startx, starty, screen, color):
                 if field[i , j] == 1:
                    p = pygame.Rect( startx + 25 * j, starty + 25 * i, 25, 25)
                    pygame.draw.rect(screen, color, p)
+
+def ceck(field, punti):
+    eliminate = 0
+    for i in range(len(field)):
+            if np.sum(field[i]) == np.size(field, 1):
+                field = np.delete(field,i,0)
+                field = np.insert(field,0, 0, axis = 0)
+                eliminate +=1
+
+    if eliminate > 0:
+        punti += pow(eliminate,eliminate)
+        
+    return (field, punti)               
 
 
 def main():
@@ -228,18 +232,19 @@ def main():
     white = 255, 255, 255
     field = np.zeros( (28, 12) )
 
+    punti = 0
     clock = pygame.time.Clock() #10 x 40
     screen = pygame.display.set_mode(size)
     downBar = pygame.Rect(0,height - 25, 25 * 13, 25)
     sideleft = pygame.Rect(0, height - 25 * 25, 25, height - 120)
     sideRight = pygame.Rect(25 * 12, height - 25 * 25, 25, height - 120)
-    hero = Hero(4, 0)
-    orangeRicky = OrangeRicky(5, 1)
-    blueRicky = BlueRicky(4, 1)
-    teewee = Teewee(4, 1)
-    cleverland = Cleverland(4, 1)
-    rhodeIsland = RhodeIsland(4, 1)
-    smashboy = SmashBoy(4, 1)
+    hero = Hero(4, 10)
+    orangeRicky = OrangeRicky(5, 10)
+    blueRicky = BlueRicky(4, 10)
+    teewee = Teewee(4, 10)
+    cleverland = Cleverland(4, 10)
+    rhodeIsland = RhodeIsland(4, 10)
+    smashboy = SmashBoy(4, 10)
     tetramini = [hero, orangeRicky, blueRicky, teewee, cleverland, rhodeIsland, smashboy]
     nxt = True
     while 1:
@@ -248,7 +253,8 @@ def main():
                 print(*field, sep="\n")
                 sys.exit()
         if nxt:
-            tetramino = copy.copy(tetramini[randint(0,6)])
+            (field, punti) = ceck(field,punti)
+            tetramino = copy.copy(tetramini[randint(0,0)])
             nxt = False
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_d]:
@@ -261,12 +267,12 @@ def main():
 
         screen.fill(black)
         nxt = tetramino.goDown(field)
-        print(field)
-        print()
+        #print(field)
+        print(punti)
         draw(field, 0, 0, screen, white)
-        pygame.draw.rect(screen, white, downBar)
-        pygame.draw.rect(screen, white, sideleft)
-        pygame.draw.rect(screen, white, sideRight)
+        pygame.draw.rect(screen, blue, downBar)
+        pygame.draw.rect(screen, blue, sideleft)
+        pygame.draw.rect(screen, blue, sideRight)
         pygame.display.flip()
         time.sleep(0.25)
 
