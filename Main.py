@@ -218,14 +218,17 @@ def ceck(field, punti):
                 eliminate +=1
 
     if eliminate > 0:
-        punti += pow(eliminate,eliminate)
+        punti += 10*pow(eliminate,eliminate)
         
     return (field, punti)               
 
 
 def main():
+
+    pygame.init()
+    font = pygame.font.SysFont("freesansbold.ttf", 50)
     
-    size = width, height = 25*13, 720
+    size = width, height = 25*14, 720
     speed = [1, 1]
     black = 0, 0, 0
     blue = 42, 12, 240
@@ -235,16 +238,16 @@ def main():
     punti = 0
     clock = pygame.time.Clock() #10 x 40
     screen = pygame.display.set_mode(size)
-    downBar = pygame.Rect(0,height - 25, 25 * 13, 25)
+    downBar = pygame.Rect(0,height - 25, 25 * 14, 25)
     sideleft = pygame.Rect(0, height - 25 * 25, 25, height - 120)
-    sideRight = pygame.Rect(25 * 12, height - 25 * 25, 25, height - 120)
-    hero = Hero(4, 10)
-    orangeRicky = OrangeRicky(5, 10)
-    blueRicky = BlueRicky(4, 10)
-    teewee = Teewee(4, 10)
-    cleverland = Cleverland(4, 10)
-    rhodeIsland = RhodeIsland(4, 10)
-    smashboy = SmashBoy(4, 10)
+    sideRight = pygame.Rect(25 * 13, height - 25 * 25, 25, height - 120)
+    hero = Hero(4, 1)
+    orangeRicky = OrangeRicky(5, 1)
+    blueRicky = BlueRicky(4, 1)
+    teewee = Teewee(4, 1)
+    cleverland = Cleverland(4, 1)
+    rhodeIsland = RhodeIsland(4, 1)
+    smashboy = SmashBoy(4, 1)
     tetramini = [hero, orangeRicky, blueRicky, teewee, cleverland, rhodeIsland, smashboy]
     nxt = True
     while 1:
@@ -254,7 +257,8 @@ def main():
                 sys.exit()
         if nxt:
             (field, punti) = ceck(field,punti)
-            tetramino = copy.copy(tetramini[randint(0,0)])
+            tetramino = copy.copy(tetramini[randint(0,6)])
+            punti +=1
             nxt = False
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_d]:
@@ -267,9 +271,11 @@ def main():
 
         screen.fill(black)
         nxt = tetramino.goDown(field)
-        #print(field)
-        print(punti)
-        draw(field, 0, 0, screen, white)
+        print(field)
+        txtpt = "punti:" + str(punti)
+        text = font.render(txtpt, False, white)
+        draw(field, 25, 0, screen, white)
+        screen.blit(text,(10,10))
         pygame.draw.rect(screen, blue, downBar)
         pygame.draw.rect(screen, blue, sideleft)
         pygame.draw.rect(screen, blue, sideRight)
