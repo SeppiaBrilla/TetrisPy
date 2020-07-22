@@ -18,6 +18,23 @@ class tetramino:
         self.y= 0
         self.x = 5
 
+    def fit(self, field){
+        for i in range(len(self.numericImage)):
+            for j in range(np.size(self.numericImage, 1)):
+                if self.numericImage[i , j] == 1:
+                    if  i + 1 == len(self.numericImage):
+                        if self.y + i + 1 >= len(field):
+                            return True
+                        if field[self.y + i + 1, self.x + j] == 1:
+                            return True
+                    
+                    elif not self.numericImage[i + 1, j] == 1:
+                        if self.y + i + 1 >= len(field):
+                            return True
+                        if field[self.y + i + 1, self.x + j] == 1:
+                            return True
+    }
+
     def draw(self, field):
         for i in range(len(self.numericImage)):
             for j in range(np.size(self.numericImage, 1)):
@@ -220,7 +237,11 @@ def ceck(field, punti):
     if eliminate > 0:
         punti += 10*pow(eliminate,eliminate)
         
-    return (field, punti)               
+    return (field, punti)   
+
+
+def restart():
+    return np.zeros( (28, 12) )            
 
 
 def main():
@@ -229,14 +250,16 @@ def main():
     font = pygame.font.SysFont("freesansbold.ttf", 50)
     
     size = width, height = 25*14, 720
-    speed = [1, 1]
     black = 0, 0, 0
     blue = 42, 12, 240
     white = 255, 255, 255
     field = np.zeros( (28, 12) )
+    fall_time = 0
+    fall_speed = 0.27
+    move_time = 0
 
     punti = 0
-    clock = pygame.time.Clock() #10 x 40
+    clock = pygame.time.Clock()
     screen = pygame.display.set_mode(size)
     downBar = pygame.Rect(0,height - 25, 25 * 14, 25)
     sideleft = pygame.Rect(0, height - 25 * 25, 25, height - 120)
@@ -260,17 +283,24 @@ def main():
             tetramino = copy.copy(tetramini[randint(0,6)])
             punti +=1
             nxt = False
-        pressed = pygame.key.get_pressed()
-        if pressed[pygame.K_d]:
-            tetramino.goRight(field)
-        elif pressed[pygame.K_a]:
-            tetramino.goLeft(field)
-        elif pressed[pygame.K_SPACE]:
-            tetramino.rotate(field)
+        if event.type == pygame.KEYDOWN and move_time % 20 == 0:
+            if event.key == pygame.K_d:
+                tetramino.goRight(field)
+            elif event.key == pygame.K_a:
+                tetramino.goLeft(field)
+            elif event.key == pygame.K_SPACE:
+                tetramino.rotate(field)
 
 
         screen.fill(black)
-        nxt = tetramino.goDown(field)
+
+        fall_time += clock.get_rawtime()
+        move_time += clock.get_rawtime()
+        clock.tick()
+        if fall_time/1000 >= fall_speed:
+            fall_time = 0
+            nxt = tetramino.goDown(field)
+
         print(field)
         txtpt = "punti:" + str(punti)
         text = font.render(txtpt, False, white)
@@ -280,7 +310,6 @@ def main():
         pygame.draw.rect(screen, blue, sideleft)
         pygame.draw.rect(screen, blue, sideRight)
         pygame.display.flip()
-        time.sleep(0.25)
 
 
 
