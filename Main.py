@@ -7,7 +7,9 @@ import copy
 import numpy as np
 from random import randint
 
+#          balck       white               cyan           blue          orange         yellow          green          purple        red 
 
+color = [(0, 0, 0), (255, 255, 255), (52, 235, 198), (42, 12, 240), (235, 159, 52), (250, 246, 0), (79, 250, 0), (145, 15, 189), (189, 15, 15) ]
 
 class tetramino:
     def __init__(self, startX, startY):
@@ -18,122 +20,100 @@ class tetramino:
         self.y= 0
         self.x = 5
 
-    def fit(self, field){
+    def fit(self, field):
         for i in range(len(self.numericImage)):
-            for j in range(np.size(self.numericImage, 1)):
-                if self.numericImage[i , j] == 1:
-                    if  i + 1 == len(self.numericImage):
-                        if self.y + i + 1 >= len(field):
-                            return True
-                        if field[self.y + i + 1, self.x + j] == 1:
-                            return True
-                    
-                    elif not self.numericImage[i + 1, j] == 1:
-                        if self.y + i + 1 >= len(field):
-                            return True
-                        if field[self.y + i + 1, self.x + j] == 1:
-                            return True
-    }
+               for j in range(np.size(self.numericImage, 1)):
+                    if self.numericImage[i , j] and field[self.y + i, self.x + j]:
+                        return False
+    
+        return True
 
     def draw(self, field):
         for i in range(len(self.numericImage)):
             for j in range(np.size(self.numericImage, 1)):
-                if self.numericImage[i, j] ==1:
+                if self.numericImage[i, j]:
                     field[self.y + i, self.x + j] = self.numericImage[i , j]
 
     def erase(self, field):
         for i in range(len(self.numericImage)):
             for j in range(np.size(self.numericImage, 1)):
-                if self.numericImage[i, j] ==1:
+                if self.numericImage[i, j]:
                     field[self.y + i, self.x + j] = 0
 
     def goDown(self, field):
 
         for i in range(len(self.numericImage)):
             for j in range(np.size(self.numericImage, 1)):
-                if self.numericImage[i , j] == 1:
-                    if  i + 1 == len(self.numericImage):
-                        if self.y + i + 1 >= len(field):
-                            return True
-                        if field[self.y + i + 1, self.x + j] == 1:
-                            return True
-                    
-                    elif not self.numericImage[i + 1, j] == 1:
-                        if self.y + i + 1 >= len(field):
-                            return True
-                        if field[self.y + i + 1, self.x + j] == 1:
-                            return True
+               if self.numericImage[i , j] and self.y + i + 1 >= len(field):
+                        return True
+        
 
         self.erase(field)
 
         self.y +=1
 
-        self.draw(field)
+        if self.fit(field):
+            self.draw(field)
+        else:
+            self.y -=1
+            self.draw(field)
+            return True
 
     def goRight(self, field):
 
         for i in range(len(self.numericImage)):
             for j in range(np.size(self.numericImage, 1)):
-                if self.numericImage[i , j] == 1:
-                    if j + 1 == np.size(self.numericImage, 1):
-                        if self.x + 1 + j >= np.size(field, 1):
-                            return 
-                        if field[self.y + i, self.x + j + 1] == 1:
-                            return
-
-                    elif not self.numericImage[i, j + 1] == 1:
-                        if self.x + j + 1 >= np.size(field, 1):
-                            return 
-                        if field[self.y + i, self.x + j + 1] == 1:
-                            return 
+                if self.numericImage[i , j] and self.x + 1 + j >= np.size(field, 1):
+                    return
 
         self.erase(field)
 
         self.x +=1
 
-        self.draw(field)
+        if self.fit(field):
+            self.draw(field)
+        else:
+            self.x -=1
+            self.draw(field)
 
     def goLeft(self, field):
  
         for i in range(len(self.numericImage)):
             for j in range(np.size(self.numericImage, 1)):
-                if self.numericImage[i , j] == 1:
-
-                    if j - 1 == 0:
-                        if self.x - 1 < 0:
-                            return 
-                        if field[self.y + i, self.x - 1] == 1:
-                            return
-
-                    elif not self.numericImage[i, j - 1] == 1:
-                        if self.x + j - 1 < 0:
-                            return 
-                        if field[self.y + i, self.x + j - 1] == 1:
-                            return 
+                if self.numericImage[i , j] and self.x - 1 + j < 0 :
+                    return
 
         self.erase(field)
 
         self.x -=1
 
-        self.draw(field)
+        if self.fit(field):
+            self.draw(field)
+        else:
+            self.x +=1
+            self.draw(field)
 
     
     def rotate(self, field):
         flipped = np.rot90(self.numericImage,1)
 
-        self.erase(field)
 
         for i in range(len(flipped)):
            for j in range(np.size(flipped, 1)):
-               if flipped[i , j] == 1:
-                   if field[self.y + i, self.x + j] == 1:
-
+               if flipped[i,j] and (0 > self.y + i or self.y + i >= len(field) or  0 > self.x + j or self.x + j >= np.size(field, 1)):
                         return 
 
-        self.rotatation += 1
+        self.erase(field)
+
+        original = self.numericImage
+
         self.numericImage = flipped
-        print(flipped)
-        self.draw(field)
+
+        if self.fit(field):
+            self.draw(field)
+        else:
+            self.numericImage = original
+            self.draw(field)
 
 
         
@@ -144,98 +124,78 @@ class tetramino:
 class Hero(tetramino):
 
     def __init__(self, numericX, numericY):
-        self.stopd = False
-        self.stopr = False
-        self.stopl = False
         self.x = numericX
         self.y = numericY
-        self.numericImage = np.matrix([1, 1, 1, 1])
-        self.rotatation = 0
+        self.numericImage = np.matrix([2, 2, 2, 2])
 
 class OrangeRicky(tetramino):
 
     def __init__(self, numericX, numericY):
-        self.stopd = False
-        self.stopr = False
-        self.stopl = False
         self.x = numericX
         self.y = numericY
-        self.numericImage = np.matrix([[0, 0, 0, 1], [0, 1, 1, 1]])
-        self.rotatation = 0
+        self.numericImage = np.matrix([[0, 0, 0, 4], [0, 4, 4, 4]])
 
 class BlueRicky(tetramino):
 
     def __init__(self, numericX, numericY):
-        self.stopd = False
-        self.stopr = False
-        self.stopl = False
         self.x = numericX
         self.y = numericY
-        self.numericImage = np.matrix([[1, 0, 0, 0], [1, 1, 1, 0]])
-        self.rotatation = 0
+        self.numericImage = np.matrix([[3, 0, 0, 0], [3, 3, 3, 0]])
 
 class Teewee(tetramino):
 
     def __init__(self, numericX, numericY):
-        self.stopd = False
-        self.stopr = False
-        self.stopl = False
         self.x = numericX
         self.y = numericY
-        self.numericImage = np.matrix([[0, 0, 1, 0], [0, 1, 1, 1]])
-        self.rotatation = 0
+        self.numericImage = np.matrix([[0, 0, 7, 0], [0, 7, 7, 7]])
 
 class Cleverland(tetramino):
 
     def __init__(self, numericX, numericY):
-        self.stopd = False
-        self.stopr = False
-        self.stopl = False
         self.x = numericX
         self.y = numericY
-        self.numericImage = np.matrix([[0, 1, 1, 0], [0, 0, 1, 1]])
-        self.rotatation = 0
+        self.numericImage = np.matrix([[0, 8, 8, 0], [0, 0, 8, 8]])
 
 class RhodeIsland(tetramino):
 
     def __init__(self, numericX, numericY):
-        self.stopd = False
-        self.stopr = False
-        self.stopl = False
         self.x = numericX
         self.y = numericY
-        self.numericImage = np.matrix([[0, 1, 1, 0], [1, 1, 0, 0]])
-        self.rotatation = 0
+        self.numericImage = np.matrix([[0, 6, 6, 0], [6, 6, 0, 0]])
 
 class SmashBoy(tetramino):
 
     def __init__(self, numericX, numericY):
-        self.stopd = False
-        self.stopr = False
-        self.stopl = False
         self.x = numericX
         self.y = numericY
-        self.numericImage = np.matrix([[0, 1, 1, 0], [0, 1, 1, 0]])
-        self.rotatation = 0
+        self.numericImage = np.matrix([[0, 5, 5, 0], [0, 5, 5, 0]])
 
 
-def draw(field, startx, starty, screen, color):
+def draw(field, startx, starty, screen):
     for i in range(len(field)):
             for j in range(np.size(field, 1)): 
-                if field[i , j] == 1:
+                if field[i , j]:
                    p = pygame.Rect( startx + 25 * j, starty + 25 * i, 25, 25)
-                   pygame.draw.rect(screen, color, p)
+                   pygame.draw.rect(screen, color[int(field[i , j])], p)
+
+
+def isFull(array):
+    for i in array:
+        if not i:
+            return False
+    
+    return True
 
 def ceck(field, punti):
     eliminate = 0
     for i in range(len(field)):
-            if np.sum(field[i]) == np.size(field, 1):
+            if  isFull(field[i]):
                 field = np.delete(field,i,0)
                 field = np.insert(field,0, 0, axis = 0)
                 eliminate +=1
 
     if eliminate > 0:
-        punti += 10*pow(eliminate,eliminate)
+        punti += pow(eliminate,eliminate)
         
     return (field, punti)   
 
@@ -281,34 +241,55 @@ def main():
         if nxt:
             (field, punti) = ceck(field,punti)
             tetramino = copy.copy(tetramini[randint(0,6)])
-            punti +=1
+            if not tetramino.fit(field):
+                tetramino = None
+            else:
+                punti +=1
             nxt = False
-        if event.type == pygame.KEYDOWN and move_time % 20 == 0:
-            if event.key == pygame.K_d:
+        if event.type == pygame.KEYDOWN:
+
+            if event.key == pygame.K_s and tetramino:
+                fall_speed = 0.14
+            else:
+                fall_speed = 0.27
+
+            if event.key == pygame.K_d and tetramino and move_time > fall_speed*1000:
+                move_time = 0
                 tetramino.goRight(field)
-            elif event.key == pygame.K_a:
+            elif event.key == pygame.K_a and tetramino and move_time > fall_speed*1000: 
+                move_time = 0
                 tetramino.goLeft(field)
-            elif event.key == pygame.K_SPACE:
+            elif event.key == pygame.K_SPACE and tetramino and move_time > fall_speed*1000:
+                move_time = 0
                 tetramino.rotate(field)
+            elif event.key == pygame.K_r:
+                tetramino = None
+                nxt = True
+                punti = 0
+                field = restart()
 
 
         screen.fill(black)
 
-        fall_time += clock.get_rawtime()
+        fall_time += clock.get_rawtime() + punti/(100+punti)
         move_time += clock.get_rawtime()
         clock.tick()
         if fall_time/1000 >= fall_speed:
             fall_time = 0
-            nxt = tetramino.goDown(field)
+            if tetramino:
+                nxt = tetramino.goDown(field)
 
         print(field)
         txtpt = "punti:" + str(punti)
+        txtpt2 = "'r' per ricominciare"
         text = font.render(txtpt, False, white)
-        draw(field, 25, 0, screen, white)
+        text2 = font.render(txtpt2, False, white)
+        draw(field, 25, 0, screen)
         screen.blit(text,(10,10))
-        pygame.draw.rect(screen, blue, downBar)
-        pygame.draw.rect(screen, blue, sideleft)
-        pygame.draw.rect(screen, blue, sideRight)
+        screen.blit(text2,(10,50))
+        pygame.draw.rect(screen, white, downBar)
+        pygame.draw.rect(screen, white, sideleft)
+        pygame.draw.rect(screen, white, sideRight)
         pygame.display.flip()
 
 
